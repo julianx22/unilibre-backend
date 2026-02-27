@@ -1,124 +1,433 @@
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <title>Universidad Libre</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Universidad Libre - Sistema de Asistencia</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background: linear-gradient(135deg, #C8102E 0%, #8B0000 100%);
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
             min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #C8102E 0%, #8B0000 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .header h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            opacity: 0.9;
+        }
+
+        .escudo {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Contenedor principal */
         .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Tarjetas de roles */
+        .roles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .rol-card {
             background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
-            max-width: 500px;
-            width: 90%;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
         }
-        h1 {
+
+        .rol-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(200,16,46,0.2);
+        }
+
+        .rol-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .rol-card h3 {
             color: #C8102E;
-            margin-top: 0;
-            text-align: center;
-            font-size: 28px;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
         }
-        h2 {
-            color: #F2A900;
-            text-align: center;
-            font-size: 22px;
-            margin-bottom: 30px;
+
+        .rol-card p {
+            color: #666;
+            margin-bottom: 1rem;
         }
-        .card {
-            background: #f5f5f5;
-            padding: 20px;
-            border-radius: 10px;
-            margin: 15px 0;
-            text-align: center;
+
+        .rol-badge {
+            display: inline-block;
+            background: #C8102E;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            font-size: 0.9rem;
         }
-        .card h3 {
-            color: #333;
-            margin: 0 0 10px 0;
+
+        /* Panel de prueba de API */
+        .api-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
         }
-        button {
+
+        .api-panel h3 {
+            color: #C8102E;
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            border-bottom: 2px solid #F2A900;
+            padding-bottom: 0.5rem;
+        }
+
+        .api-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .btn {
             background: #C8102E;
             color: white;
             border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            font-size: 16px;
+            padding: 1rem;
+            border-radius: 8px;
+            font-size: 1rem;
             cursor: pointer;
-            width: 100%;
+            transition: all 0.3s;
+            border: 2px solid #C8102E;
         }
-        button:hover {
-            background: #8B0000;
+
+        .btn:hover {
+            background: white;
+            color: #C8102E;
         }
-        #mensaje {
-            margin-top: 20px;
-            padding: 10px;
-            border-radius: 5px;
-            display: none;
+
+        .btn-secondary {
+            background: #F2A900;
+            border-color: #F2A900;
         }
-        .exito {
+
+        .btn-secondary:hover {
+            background: white;
+            color: #F2A900;
+        }
+
+        .resultado {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            border-left: 4px solid #C8102E;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .success {
+            border-left-color: #28a745;
             background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
         }
+
         .error {
+            border-left-color: #dc3545;
             background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        .loading::after {
+            content: '';
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid #C8102E;
+            border-top-color: transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-left: 0.5rem;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .estado-servidor {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .indicador {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .indicador.online {
+            background: #28a745;
+            box-shadow: 0 0 10px #28a745;
+        }
+
+        .indicador.offline {
+            background: #dc3545;
+        }
+
+        .url-backend {
+            background: #e9ecef;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+            word-break: break-all;
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem;
+            background: #333;
+            color: white;
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: #F2A900;
+            text-decoration: none;
+            margin: 0 0.5rem;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>🏛️ Universidad Libre de Colombia</h1>
+    <header class="header">
+        <div class="escudo">🏛️</div>
+        <h1>Universidad Libre de Colombia</h1>
         <h2>Sistema de Gestión de Asistencia</h2>
-        
-        <div class="card">
-            <h3>👨‍🎓 Estudiantes</h3>
-            <p>Registra tu asistencia con QR</p>
+    </header>
+
+    <div class="container">
+        <!-- Estado del servidor -->
+        <div class="api-panel">
+            <h3>🔌 Estado del Servidor</h3>
+            <div class="url-backend" id="backendUrl">
+                Conectando...
+            </div>
+            <div class="estado-servidor" id="estadoServidor">
+                <span class="indicador offline"></span>
+                <span id="estadoTexto">Verificando conexión...</span>
+            </div>
         </div>
-        
-        <div class="card">
-            <h3>👨‍🏫 Profesores</h3>
-            <p>Gestiona tus clases</p>
+
+        <!-- Tarjetas de roles -->
+        <div class="roles-grid">
+            <div class="rol-card" onclick="mostrarInfo('estudiante')">
+                <div class="rol-icon">👨‍🎓</div>
+                <h3>Estudiantes</h3>
+                <p>Registra tu asistencia con código QR, consulta tu historial de fallas, descarga reportes y envía justificaciones.</p>
+                <span class="rol-badge">Acceso Estudiantil</span>
+            </div>
+
+            <div class="rol-card" onclick="mostrarInfo('profesor')">
+                <div class="rol-icon">👨‍🏫</div>
+                <h3>Profesores</h3>
+                <p>Genera códigos QR, toma asistencia, aprueba justificaciones y visualiza estudiantes en riesgo de deserción.</p>
+                <span class="rol-badge">Acceso Docente</span>
+            </div>
+
+            <div class="rol-card" onclick="mostrarInfo('admin')">
+                <div class="rol-icon">👨‍💼</div>
+                <h3>Administradores</h3>
+                <p>Gestión de usuarios, programas, grupos, reportes globales y configuración del sistema.</p>
+                <span class="rol-badge">Acceso Administrativo</span>
+            </div>
         </div>
-        
-        <div class="card">
-            <h3>👨‍💼 Administradores</h3>
-            <p>Control total del sistema</p>
+
+        <!-- Panel de prueba de API -->
+        <div class="api-panel">
+            <h3>🧪 Prueba de Conexión</h3>
+            <p>Selecciona un endpoint para probar la conexión con el backend:</p>
+            
+            <div class="api-buttons">
+                <button class="btn" onclick="probarAPI('health')">🏥 Health Check</button>
+                <button class="btn" onclick="probarAPI('programas')">📚 Programas</button>
+                <button class="btn btn-secondary" onclick="probarAPI('estudiantes')">👨‍🎓 Estudiantes</button>
+                <button class="btn btn-secondary" onclick="probarAPI('profesores')">👨‍🏫 Profesores</button>
+            </div>
+
+            <div id="resultadoAPI" class="resultado">
+                Haz clic en un botón para probar la API
+            </div>
         </div>
-        
-        <button onclick="probarConexion()">Probar Conexión con el Servidor</button>
-        
-        <div id="mensaje"></div>
+
+        <!-- Información del sistema -->
+        <div class="api-panel">
+            <h3>📋 Funcionalidades del Sistema</h3>
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+                <div>
+                    <h4 style="color: #C8102E;">👨‍🎓 Estudiantes</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✓ Registro con código QR</li>
+                        <li>✓ Historial de asistencias</li>
+                        <li>✓ Descarga de reportes</li>
+                        <li>✓ Envío de justificaciones</li>
+                        <li>✓ Notificaciones</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #C8102E;">👨‍🏫 Profesores</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✓ Generación de QR</li>
+                        <li>✓ Toma de asistencia</li>
+                        <li>✓ Aprobación de justificaciones</li>
+                        <li>✓ Alertas de deserción</li>
+                        <li>✓ Reportes por grupo</li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 style="color: #C8102E;">👨‍💼 Administradores</h4>
+                    <ul style="list-style: none; padding: 0;">
+                        <li>✓ Gestión de usuarios</li>
+                        <li>✓ Gestión de programas</li>
+                        <li>✓ Creación de grupos</li>
+                        <li>✓ Reportes globales</li>
+                        <li>✓ Configuración del sistema</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 
+    <footer>
+        <p>© 2024 Universidad Libre de Colombia - Todos los derechos reservados</p>
+        <p class="footer-links">
+            <a href="#">Términos y condiciones</a> |
+            <a href="#">Política de privacidad</a> |
+            <a href="#">Contacto: inclas@gmail.com</a>
+        </p>
+        <p style="margin-top: 1rem; font-size: 0.8rem; opacity: 0.7;">
+            Versión 1.0.0 - Requisitos: Chrome/Edge/Firefox, conexión 5 Mbps, cámara para QR
+        </p>
+    </footer>
+
     <script>
-        async function probarConexion() {
-            const mensaje = document.getElementById('mensaje');
-            mensaje.style.display = 'block';
-            mensaje.className = '';
-            mensaje.textContent = 'Probando conexión...';
-            
+        // Configuración - CAMBIA ESTA URL POR LA DE RENDER
+        const API_URL = 'https://unilibre-api.onrender.com'; // ← CAMBIA ESTO
+        // Para pruebas locales: 'http://localhost:3001'
+
+        function mostrarInfo(rol) {
+            const mensajes = {
+                estudiante: '👨‍🎓 Acceso para estudiantes: Podrás registrar asistencia con QR, ver historial y justificar fallas.',
+                profesor: '👨‍🏫 Acceso para profesores: Podrás generar QR, tomar asistencia y gestionar justificaciones.',
+                admin: '👨‍💼 Acceso para administradores: Gestión completa de usuarios, programas y configuración.'
+            };
+            alert(mensajes[rol]);
+        }
+
+        async function probarAPI(endpoint) {
+            const resultadoDiv = document.getElementById('resultadoAPI');
+            resultadoDiv.className = 'resultado loading';
+            resultadoDiv.textContent = 'Cargando...';
+
             try {
-                const respuesta = await fetch('http://localhost:3001/api/health');
-                const datos = await respuesta.json();
+                const url = `${API_URL}/api/${endpoint}`;
+                console.log('Probando:', url);
                 
-                mensaje.className = 'exito';
-                mensaje.textContent = '✅ ' + datos.message;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                resultadoDiv.className = 'resultado success';
+                resultadoDiv.innerHTML = `<strong>✅ Éxito - ${url}</strong>\n\n${JSON.stringify(data, null, 2)}`;
             } catch (error) {
-                mensaje.className = 'error';
-                mensaje.textContent = '❌ No se pudo conectar con el servidor';
+                console.error('Error:', error);
+                resultadoDiv.className = 'resultado error';
+                resultadoDiv.innerHTML = `<strong>❌ Error de conexión</strong>\n\nNo se pudo conectar a:\n${API_URL}/api/${endpoint}\n\nVerifica que el backend esté corriendo y la URL sea correcta.`;
             }
         }
+
+        async function verificarServidor() {
+            const estadoDiv = document.getElementById('estadoServidor');
+            const indicador = document.querySelector('.indicador');
+            const estadoTexto = document.getElementById('estadoTexto');
+            const urlDiv = document.getElementById('backendUrl');
+            
+            urlDiv.textContent = `📡 Conectando a: ${API_URL}`;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/health`);
+                const data = await response.json();
+                
+                if (response.ok) {
+                    indicador.className = 'indicador online';
+                    estadoTexto.textContent = `✅ Servidor activo - ${data.mensaje}`;
+                } else {
+                    throw new Error('Respuesta no válida');
+                }
+            } catch (error) {
+                indicador.className = 'indicador offline';
+                estadoTexto.textContent = '❌ No se pudo conectar al servidor. Verifica que el backend esté corriendo.';
+            }
+        }
+
+        // Verificar servidor al cargar la página
+        verificarServidor();
+
+        // Verificar cada 30 segundos
+        setInterval(verificarServidor, 30000);
     </script>
 </body>
 </html>
